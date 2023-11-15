@@ -1,0 +1,11 @@
+{% extends "quote.html" %}
+
+{% block title %}
+    Quoted
+{% endblock %}
+
+{% block content %}
+    <form action="/quoted" method="post">
+        <p>A share of {{ name["name"] }} costs ${{ name["price"] }} </p>
+    </form>
+{% endblock %}

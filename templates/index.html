@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block main %}
+    <form action="/">
+        <div class="section">
+            <h2>Wall Street Moves</h2>
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Symbol</th>
+                    <th scope="col">Names</th>
+                    <th scope="col">Shares</th>
+                    <th scope="col">Current Price</th>
+                    <th scope="col">Total</th>
+                  </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for i in index %}
+                    <tr>
+                        <td>{{ i["symbol"] }}</td>
+                        <td>{{ i["name"] }}</td>
+                        <td>{{ i["shares"] }}</td>
+                        <td>${{ i["price"] }}</td>
+                        <td>${{ i["total"] }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tbody class="table-group-divider">
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <th scope="row">Cash</th>
+                            <td>${{ cash }}</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <th scope="row">TOTAL</th>
+                            <td>${{ total }}</td>
+                        </tr>
+                    </tbody>
+                </tbody>
+              </table>
+        </div>
+    </form>
+{% endblock %}
+
+
