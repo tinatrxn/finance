@@ -56,12 +56,12 @@ def index():
     cash = cash_sql[0]["cash"]
     total = cash
 
-    rows = db.execute("SELECT stock, SUM(shares) FROM profiles WHERE user_id = ? GROUP BY stock", session["user_id"])
+    rows = db.execute("SELECT stock, SUM (shares) AS total FROM profiles WHERE user_id = ? GROUP BY stock", session["user_id"])
 
     for i in rows:
         # make a dictionary for each stock, put into index
         profile["symbol"] = i["stock"]
-        profile["shares"] = i["SUM(shares)"]
+        profile["shares"] = i["total"]
 
         quote_dic = lookup(profile["symbol"])
         profile["name"] = quote_dic["name"]
@@ -263,7 +263,7 @@ def sell():
             return apology("Invalid number of shares", 403)
 
         # Ensure user has stock + amount of stock in profile
-        rows = db.execute("SELECT stock, SUM(shares) FROM profiles WHERE user_id = ? GROUP BY stock", session["user_id"])
+        rows = db.execute("SELECT stock, SUM (shares) AS total FROM profiles WHERE user_id = ? GROUP BY stock", session["user_id"])
 
         stock_valid = 0
         stocks = 0
@@ -271,7 +271,7 @@ def sell():
         for i in rows:
             if i["stock"] == request.form.get("symbol").upper():
                 stock_valid = 1
-                stocks = i["SUM(shares)"]
+                stocks = i["total"]
 
         if stock_valid == 0:
             return apology("You don't own this stock", 403)
