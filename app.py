@@ -102,11 +102,12 @@ def buy():
             return apology("Insufficient funds bitch", 403)
 
         # Purchase stocks
-        cash = cash - (float(price) * float(request.form.get("shares")))
+        total_price = float(price) * float(request.form.get("shares"))
+        cash = cash - total_price
         db.execute("UPDATE users SET cash = ? WHERE id = ?", cash, session["user_id"])
 
         db.execute("INSERT INTO profiles (user_id, stock, shares, price, date) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)", session["user_id"], request.form.get("symbol").upper(), request.form.get("shares"), price)
-        db.execute("INSERT INTO history (user_id, stock, shares, price, date, type) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)", session["user_id"], request.form.get("symbol").upper(), request.form.get("shares"), price, 'Buy')
+        db.execute("INSERT INTO history (user_id, stock, shares, price, date, type, profit) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)", session["user_id"], request.form.get("symbol").upper(), request.form.get("shares"), price, 'Buy', f"-{total_price}")
 
         return redirect("/")
 
@@ -121,7 +122,7 @@ def buy():
 def history():
     """Show history of transactions"""
 
-    rows = db.execute("SELECT stock, shares, price, date, type FROM history WHERE user_id = ? ORDER BY date DESC", session["user_id"])
+    rows = db.execute("SELECT stock, shares, price, date, type, profit FROM history WHERE user_id = ? ORDER BY date DESC", session["user_id"])
 
     return render_template("history.html", rows=rows)
 
@@ -282,10 +283,11 @@ def sell():
 
         # Update earnings
         rows2 = db.execute("SELECT cash FROM users WHERE id = ?", session["user_id"])
-        cash = rows2[0]["cash"] + (float(quote_dic["price"]) * float(stocks_selling))
+        profit = float(quote_dic["price"]) * float(stocks_selling)
+        cash = rows2[0]["cash"]
 
         # Selling stock
-        db.execute("INSERT INTO history (user_id, stock, shares, price, date, type) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)", session["user_id"], request.form.get("symbol").upper(), int(request.form.get("shares")), quote_dic["price"], 'sell')
+        db.execute("INSERT INTO history (user_id, stock, shares, price, date, type, profit) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)", session["user_id"], request.form.get("symbol").upper(), int(request.form.get("shares")), quote_dic["price"], 'Sell', f"+{profit}")
         db.execute("INSERT INTO profiles (user_id, stock, shares, price, date) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)", session["user_id"], request.form.get("symbol").upper(), -abs(int(stocks_selling)), quote_dic["price"])
         db.execute("UPDATE users SET cash = ? WHERE id = ?", cash, session["user_id"])
 
