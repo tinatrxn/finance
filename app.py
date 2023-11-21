@@ -285,7 +285,7 @@ def sell():
 
         # Selling stock
         db.execute("INSERT INTO history (user_id, stock, shares, price, date) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)", session["user_id"], request.form.get("symbol").upper(), -abs(int(request.form.get("shares"))), quote_dic["price"])
-        db.execute("DELETE FROM profiles WHERE user_id = ? AND stock = ? LIMIT ?", session["user_id"], request.form.get("symbol").upper(), int(request.form.get("shares")))
+        db.execute("DELETE FROM profiles WHERE user_id = ? AND stock = ? [ LIMIT {?} ]", session["user_id"], request.form.get("symbol").upper(), int(request.form.get("shares")))
         db.execute("UPDATE users SET cash = ? WHERE id = ?", cash, session["user_id"])
 
         return redirect("/")
