@@ -14,6 +14,7 @@
                     <th scope="col">Symbol</th>
                     <th scope="col">Shares</th>
                     <th scope="col">Price</th>
+                    <th scope="col">Profit</th>
                     <th scope="col">Transacted</th>
                   </tr>
                 </thead>
@@ -24,6 +25,7 @@
                         <td>{{ i["stock"] }}</td>
                         <td>{{ i["shares"] }}</td>
                         <td>${{ i["price"] }}</td>
+                        <td>${{ i["profit"] }}</td>
                         <td>{{ i["date"] }}</td>
                     </tr>
                     {% endfor %}
