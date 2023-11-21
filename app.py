@@ -106,7 +106,7 @@ def buy():
         db.execute("UPDATE users SET cash = ? WHERE id = ?", cash, session["user_id"])
 
         db.execute("INSERT INTO profiles (user_id, stock, shares, price, date) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)", session["user_id"], request.form.get("symbol").upper(), request.form.get("shares"), price)
-        db.execute("INSERT INTO history (user_id, stock, shares, price, date) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)", session["user_id"], request.form.get("symbol").upper(), request.form.get("shares"), price)
+        db.execute("INSERT INTO history (user_id, stock, shares, price, date, type) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)", session["user_id"], request.form.get("symbol").upper(), request.form.get("shares"), price, 'Buy')
 
         return redirect("/")
 
@@ -266,26 +266,27 @@ def sell():
         rows = db.execute("SELECT stock, SUM (shares) AS total FROM profiles WHERE user_id = ? GROUP BY stock", session["user_id"])
 
         stock_valid = 0
-        stocks = 0
+        stocks_selling = request.form.get("shares")
+        stocks_available = 0
 
         for i in rows:
             if i["stock"] == request.form.get("symbol").upper():
                 stock_valid = 1
-                stocks = i["total"]
+                stocks_available = i["total"]
 
         if stock_valid == 0:
             return apology("You don't own this stock", 403)
 
-        elif int(request.form.get("shares")) > stocks:
+        elif int(request.form.get("shares")) > stocks_available:
             return apology("You don't own that many stocks", 403)
 
         # Update earnings
         rows2 = db.execute("SELECT cash FROM users WHERE id = ?", session["user_id"])
-        cash = rows2[0]["cash"] + (float(quote_dic["price"]) * float(stocks))
+        cash = rows2[0]["cash"] + (float(quote_dic["price"]) * float(stocks_selling))
 
         # Selling stock
-        db.execute("INSERT INTO history (user_id, stock, shares, price, date) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)", session["user_id"], request.form.get("symbol").upper(), -abs(int(request.form.get("shares"))), quote_dic["price"])
-        db.execute("DELETE FROM profiles WHERE user_id = ? AND stock = ? [ LIMIT {?} ]", session["user_id"], request.form.get("symbol").upper(), int(request.form.get("shares")))
+        db.execute("INSERT INTO history (user_id, stock, shares, price, date, type) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)", session["user_id"], request.form.get("symbol").upper(), int(request.form.get("shares")), quote_dic["price"], 'sell')
+        db.execute("INSERT INTO profiles (user_id, stock, shares, price, date) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)", session["user_id"], request.form.get("symbol").upper(), -abs(int(stocks_selling)), quote_dic["price"])
         db.execute("UPDATE users SET cash = ? WHERE id = ?", cash, session["user_id"])
 
         return redirect("/")

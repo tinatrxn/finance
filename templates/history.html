@@ -10,6 +10,7 @@
             <table class="table">
                 <thead>
                   <tr>
+                    <th scope="col">Type</th>
                     <th scope="col">Symbol</th>
                     <th scope="col">Shares</th>
                     <th scope="col">Price</th>
@@ -19,6 +20,7 @@
                 <tbody class="table-group-divider">
                     {% for i in rows %}
                     <tr>
+                        <td>{{ i["type"] }}</td>
                         <td>{{ i["stock"] }}</td>
                         <td>{{ i["shares"] }}</td>
                         <td>${{ i["price"] }}</td>
@@ -30,5 +32,3 @@
         </div>
     </form>
 {% endblock %}
-
-
