@@ -6,8 +6,13 @@
 
 {% block main %}
     <form action="/sell" method="post">
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="sell" name="symbol" placeholder="Stock's Symbol" type="text">
+        <div class="mb-3" style="width:10%; margin:auto">
+            <select class="form-select" name="symbol">
+                <option selected>Stock</option>
+                {% for stock in rows %}
+                    <option value="{{ stock['stock'] }}">{{ stock['stock'] }}</option>
+                {% endfor %}
+              </select>
         </div>
         <div class="mb-3">
             <input class="form-control mx-auto w-auto" id="shares" name="shares" placeholder="Number of Shares" type="number" min="1" step="1" oninput="validity.valid||(value='');">

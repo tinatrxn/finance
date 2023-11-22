@@ -295,4 +295,6 @@ def sell():
 
     # User reached route via GET (click link/redirect)
     else:
-        return render_template("sell.html")
+        # Show stocks available to sell
+        rows = db.execute("SELECT stock FROM profiles WHERE user_id = ? GROUP BY stock", session["user_id"])
+        return render_template("sell.html", rows=rows)
