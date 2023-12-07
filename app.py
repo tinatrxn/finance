@@ -99,7 +99,7 @@ def buy():
         cash = rows[0]["cash"]
 
         if (float(price) * float(request.form.get("shares"))) > cash:
-            return apology("Insufficient funds bitch", 403)
+            return apology("Insufficient funds", 403)
 
         # Purchase stocks
         total_price = float(price) * float(request.form.get("shares"))
